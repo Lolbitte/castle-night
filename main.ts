@@ -78,6 +78,9 @@ function giveIntroduction () {
     showInstruction("Jump with the up or A button.")
     showInstruction("Double jump by pressing jump again.")
 }
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    attemptJump()
+})
 function initializeCoinAnimation () {
     coinAnimation = animation.createAnimation(ActionKind.Walking, 200)
     coinAnimation.addAnimationFrame(img`
@@ -211,6 +214,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Coin, function (sprite, otherSpr
     otherSprite.destroy(effects.trail, 250)
     otherSprite.y += -3
     info.changeScoreBy(3)
+    music.play(music.createSong(hex`0078000408020200001c00010a006400f401640000040000000000000000000000000005000004120000000400011b08000c00012410001400012c06001c00010a006400f401640000040000000000000000000000000000000002120000000400011b08000c000124100014000129`), music.PlaybackMode.UntilDone)
     music.baDing.play()
 })
 function attemptJump () {
@@ -272,7 +276,6 @@ function animateIdle () {
         `)
 }
 function setLevelTileMap (level: number) {
-    clearGame()
     if (level == 0) {
         tiles.setTilemap(tilemap`level`)
     } else if (level == 1) {
@@ -291,6 +294,7 @@ function setLevelTileMap (level: number) {
         tiles.setTilemap(tilemap`level_6`)
     }
     initializeLevel(level)
+    clearGame()
 }
 function initializeFlierAnimations () {
     flierFlying = animation.createAnimation(ActionKind.Walking, 100)
@@ -368,6 +372,9 @@ function initializeFlierAnimations () {
         . . . . . . . . . . . . . . . . 
         `)
 }
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    attemptJump()
+})
 function animateRun () {
     mainRunLeft = animation.createAnimation(ActionKind.Walking, 100)
     animation.attachAnimation(hero, mainRunLeft)
@@ -639,9 +646,6 @@ function animateJumps () {
             `)
     }
 }
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    attemptJump()
-})
 function animateCrouch () {
     mainCrouchLeft = animation.createAnimation(ActionKind.Walking, 100)
     animation.attachAnimation(hero, mainCrouchLeft)
@@ -698,11 +702,6 @@ function clearGame () {
         value4.destroy()
     }
 }
-controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (!(hero.isHittingTile(CollisionDirection.Bottom))) {
-        hero.vy += 80
-    }
-})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile1`, function (sprite, location) {
     info.changeLifeBy(1)
     currentLevel += 1
@@ -776,8 +775,10 @@ function createEnemies () {
         animation.attachAnimation(flier, flierIdle)
     }
 }
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    attemptJump()
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (!(hero.isHittingTile(CollisionDirection.Bottom))) {
+        hero.vy += 80
+    }
 })
 function showInstruction (text: string) {
     game.showLongText(text, DialogLayout.Bottom)
@@ -861,7 +862,7 @@ let invincibilityPeriod = 0
 let hero: Sprite = null
 hero = sprites.create(img`
     . . . . . f f 4 4 f f . . . . . 
-    . . . . f 5 4 5 5 4 5 f . . . . 
+    . . . . f 5 4 5 5 4 5 f . . 3 . 
     . . . f e 4 5 5 5 5 4 e f . . . 
     . . f b 3 e 4 4 4 4 e 3 b f . . 
     . . f 3 3 3 3 3 3 3 3 3 3 f . . 
@@ -1004,6 +1005,7 @@ scene.setBackgroundImage(img`
     4ddddddd4d444dd4dd4ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd4ddddddddddddddddddddddddddddddd4ddddddddddddddddddddddddddddd4ddddddddd
     dddddddddd444ddddd3ddddddddddddd4ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd44dddddddddddddddddddddddddddddddddd4ddddddddd
     `)
+music.play(music.createSong(hex`0078000408020106001c00010a006400f401640000040000000000000000000000000000000002480000000400031e252a08000c00012010001400021b2914001800012218001c0001241c002000012020002400021d2726002700012028003000021d293000380001243c004000021e2a`), music.PlaybackMode.LoopingInBackground)
 initializeAnimations()
 createPlayer(hero)
 levelCount = 8
