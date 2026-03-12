@@ -78,9 +78,6 @@ function giveIntroduction () {
     showInstruction("Jump with the up or A button.")
     showInstruction("Double jump by pressing jump again.")
 }
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    attemptJump()
-})
 function initializeCoinAnimation () {
     coinAnimation = animation.createAnimation(ActionKind.Walking, 200)
     coinAnimation.addAnimationFrame(img`
@@ -372,9 +369,6 @@ function initializeFlierAnimations () {
         . . . . . . . . . . . . . . . . 
         `)
 }
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    attemptJump()
-})
 function animateRun () {
     mainRunLeft = animation.createAnimation(ActionKind.Walking, 100)
     animation.attachAnimation(hero, mainRunLeft)
@@ -646,6 +640,9 @@ function animateJumps () {
             `)
     }
 }
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    attemptJump()
+})
 function animateCrouch () {
     mainCrouchLeft = animation.createAnimation(ActionKind.Walking, 100)
     animation.attachAnimation(hero, mainCrouchLeft)
@@ -702,6 +699,11 @@ function clearGame () {
         value4.destroy()
     }
 }
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (!(hero.isHittingTile(CollisionDirection.Bottom))) {
+        hero.vy += 80
+    }
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile1`, function (sprite, location) {
     info.changeLifeBy(1)
     currentLevel += 1
@@ -775,10 +777,8 @@ function createEnemies () {
         animation.attachAnimation(flier, flierIdle)
     }
 }
-controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (!(hero.isHittingTile(CollisionDirection.Bottom))) {
-        hero.vy += 80
-    }
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    attemptJump()
 })
 function showInstruction (text: string) {
     game.showLongText(text, DialogLayout.Bottom)
